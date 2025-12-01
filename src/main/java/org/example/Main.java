@@ -48,13 +48,21 @@ public class Main {
         if (grades == null || grades.isEmpty()) return 0.0;
         List<Double> parsed = new ArrayList<>();
         for (String g : grades) {
-            if (g != null && !g.trim().equalsIgnoreCase("н.п.") && !g.trim().isEmpty()) {
-                parsed.add(Double.parseDouble(g.trim()));
+            if (g == null || g.trim().isEmpty() || g.trim().equalsIgnoreCase("н.п.")) {
+                // игнорируем
+                continue;
+            } else if (g.trim().equalsIgnoreCase("н")) {
+                parsed.add(0.0); // "не являлся" = 0
+            } else {
+                try {
+                    parsed.add(Double.parseDouble(g.trim()));
+                } catch (NumberFormatException e) {
+                    // можно игнорировать или логировать
+                }
             }
         }
         if (parsed.isEmpty()) return 0.0;
         double sum = parsed.stream().mapToDouble(Double::doubleValue).sum();
-        // делим на количество реально учтённых значений (не "н.п.")
         return sum / parsed.size();
     }
 
